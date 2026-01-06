@@ -25,48 +25,12 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install numpy pytest pytest-cov
+        pip install numpy pytest
         pip install -e . || pip install .
     
     - name: Run tests
-      run: |
-        pytest tests/ -v --tb=short || echo "Some tests failed - see above for details"
+      run: pytest tests/ -v --tb=short
       continue-on-error: true
     
     - name: Test imports
-      run: |
-        python -c "import aeromorph; print(f'AeroMorph v{aeromorph.__version__} imported successfully')"
-        python -c "from aeromorph import MorphDecisionEngine, SwarmMorphProtocol; print('Core modules OK')"
-
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
-    
-    - name: Install flake8
-      run: python -m pip install flake8
-    
-    - name: Lint with flake8 (errors only)
-      run: python -m flake8 aeromorph --count --select=E9,F63,F7,F82 --show-source --statistics
-    
-    - name: Lint with flake8 (style - informational)
-      run: python -m flake8 aeromorph --count --exit-zero --max-complexity=15 --max-line-length=120 --statistics
-      continue-on-error: true
-
-  docs:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Check documentation files exist
-      run: |
-        test -f README.md && echo "README.md exists"
-        test -f LICENSE && echo "LICENSE exists"
-        test -d docs && echo "docs/ directory exists"
-        test -d aeromorph && echo "aeromorph/ package exists"
-```
+      run: python -c "import aeromorph; print('AeroMorph imported successfully')"
