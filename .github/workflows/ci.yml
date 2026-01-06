@@ -10,42 +10,66 @@ jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false  # ← Don't stop other versions if one fails
+      fail-fast: false
       matrix:
         python-version: ['3.9', '3.10', '3.11']
 
     steps:
-    - uses: actions/checkout@v4  # ← Updated from v3
+    - uses: actions/checkout@v4
     
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5  # ← Updated from v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
     
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install numpy pytest pytest-cov  # ← Explicit install
+        pip install numpy pytest pytest-cov
         pip install -e . || pip install .
     
     - name: Run tests
       run: |
-        pytest tests/ -v --tb=short || echo "Some tests failed"
-      continue-on-error: true  # ← Won't fail the build
+        pytest tests/ -v --tb=short || echo "Some tests failed - see above for details"
+      continue-on-error: true
     
-    - name: Test imports  # ← NEW: Verify package works
+    - name: Test imports
       run: |
-        python -c "import aeromorph; print(f'AeroMorph v{aeromorph.__version__}')"
+        python -c "import aeromorph; print(f'AeroMorph v{aeromorph.__version__} imported successfully')"
+        python -c "from aeromorph import MorphDecisionEngine, SwarmMorphProtocol; print('Core modules OK')"
 
   lint:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
     
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Install flake8
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8
+    
     - name: Lint with flake8 (errors only)
       run: |
-        flake8 aeromorph --select=E9,F63,F7,F82  # ← Only syntax errors
+        flake8 aeromorph --count --select=E9,F63,F7,F82 --show-source --statistics
     
     - name: Lint with flake8 (style - informational)
-      run: flake8 aeromorph --exit-zero  # ← Won't fail build
+      run: |
+        flake8 aeromorph --count --exit-zero --max-complexity=15 --max-line-length=120 --statistics
       continue-on-error: true
+
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Check documentation files exist
+      run: |
+        test -f README.md && echo "✓ README.md exists"
+        test -f LICENSE && echo "✓ LICENSE exists"
+        test -d docs && echo "✓ docs/ directory exists"
+        test -d aeromorph && echo "✓ aeromorph/ package exists"
