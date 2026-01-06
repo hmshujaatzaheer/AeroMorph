@@ -1,0 +1,18 @@
+# Core dependencies
+numpy>=1.21.0
+
+# Optional: Visualization
+matplotlib>=3.5.0
+
+# Optional: Deep Learning
+torch>=2.0.0
+
+# Optional: Scientific computing
+scipy>=1.9.0
+
+# Development dependencies
+pytest>=7.0.0
+pytest-cov>=4.0.0
+black>=22.0.0
+flake8>=5.0.0
+mypy>=0.990
