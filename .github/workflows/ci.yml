@@ -69,3 +69,4 @@ jobs:
         test -f LICENSE && echo "LICENSE exists"
         test -d docs && echo "docs/ directory exists"
         test -d aeromorph && echo "aeromorph/ package exists"
+```
